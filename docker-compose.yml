@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # -----------------------------------------------
+  # Backend Service (Flask API)
+  # -----------------------------------------------
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    volumes:
+      # This volume keeps your SQLite database alive even if the container stops
+      - ./backend/instance:/app/instance
+    environment:
+      - FLASK_ENV=development
+
+  # -----------------------------------------------
+  # Frontend Service (React / Vite)
+  # -----------------------------------------------
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
