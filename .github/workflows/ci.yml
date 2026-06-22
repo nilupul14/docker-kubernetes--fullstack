@@ -3,9 +3,9 @@ name: Build and Test Fullstack App
 # This tells GitHub to run this script every time someone pushes to the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   # Job 1: Check the Backend
