@@ -11,7 +11,7 @@ RUN npm install
 # Copy the rest of your React app code
 COPY . .
 
-# Vite defaults to port 5173
+# Vite defaults to port 5173(FE)
 EXPOSE 5173
 
 # Run the Vite development server with the --host flag
