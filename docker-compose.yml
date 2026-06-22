@@ -2,20 +2,37 @@ version: '3.8'
 
 services:
   # -----------------------------------------------
-  # Backend Service (Flask API)
+  # 1. Database Service (PostgreSQL)
+  # -----------------------------------------------
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: devops_user
+      POSTGRES_PASSWORD: test1234567
+      POSTGRES_DB: task_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # This ensures database rows persist on your physical machine
+      - postgres_data:/var/lib/postgresql/data
+
+  # -----------------------------------------------
+  # 2. Backend Service (Flask API)
   # -----------------------------------------------
   backend:
     build: ./backend
     ports:
       - "5000:5000"
-    volumes:
-      # This volume keeps your SQLite database alive even if the container stops
-      - ./backend/instance:/app/instance
     environment:
+      # We change the database URL connection string to target the Postgres container
+      - DATABASE_URL=postgresql://devops_user:test1234567@db:5432/task_db
       - FLASK_ENV=development
+    depends_on:
+      - db
 
   # -----------------------------------------------
-  # Frontend Service (React / Vite)
+  # 3. Frontend Service (React / Vite)
   # -----------------------------------------------
   frontend:
     build: ./frontend
@@ -25,3 +42,36 @@ services:
       - VITE_API_URL=http://localhost:5000
     depends_on:
       - backend
+
+# Declare the persistent volume for the Postgres container data
+volumes:
+  postgres_data:
+
+################ Initial Codes for #########################
+# version: '3.8'
+
+# services:
+#   # -----------------------------------------------
+#   # Backend Service (Flask API)
+#   # -----------------------------------------------
+#   backend:
+#     build: ./backend
+#     ports:
+#       - "5000:5000"
+#     volumes:
+#       # This volume keeps your SQLite database alive even if the container stops
+#       - ./backend/instance:/app/instance
+#     environment:
+#       - FLASK_ENV=development
+
+#   # -----------------------------------------------
+#   # Frontend Service (React / Vite)
+#   # -----------------------------------------------
+#   frontend:
+#     build: ./frontend
+#     ports:
+#       - "5173:5173"
+#     environment:
+#       - VITE_API_URL=http://localhost:5000
+#     depends_on:
+#       - backend
