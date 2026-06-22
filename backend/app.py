@@ -2,12 +2,15 @@ from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 # Enable CORS so our React app can safely send data requests
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task.db'
+# Fallback to sqlite only if DATABASE_URL environment variable isn't found
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///task.db')
+db = SQLAlchemy(app)
 db = SQLAlchemy(app)
 
 class Todo(db.Model):
